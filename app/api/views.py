@@ -42,5 +42,7 @@ class AmoInstallWidgetWebhookView(APIView):
 class AmoWebhookView(APIView):
     
     def post(self, request: Request):
-        logger.debug(f"AmoWebhookView.data = {request.data}")
-        return Response({"status": "oke"}, status=200)
+        amo = AmoProject.objects.first()
+        amo_api = amo.get_api()
+        me = amo_api.get_me()
+        return Response(me.model_dump(), status=200)
