@@ -3,7 +3,8 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from loguru import logger
 from .serializers import AuthParamsSerializer
-from .models import AmoWidget
+from .models import AmoWidget, AmoProject
+from .amo_api import get_tokens_by_code
 
 
 class AmoInstallWidgetWebhookView(APIView):
@@ -21,6 +22,16 @@ class AmoInstallWidgetWebhookView(APIView):
             logger.error(f"widget with client_id={client_id} not found")
             return Response({"status": "oke"}, status=200)
         widget = widget.first()
+        response = get_tokens_by_code(client_id, widget.client_secret, code, referer.split(".")[0])
+        access_token = response.get("access_token")
+        refresh_token = response.get("refresh_token")
+        logger.debug(f"Получены токены {response}")
+        AmoProject.objects.create(
+            subdomain=referer.split(".")[0],
+            access_token=access_token,
+            refresh_token=refresh_token,
+            widget=widget
+        )
         return Response({"status": "oke"}, status=200)
     
     def post(self, request: Request):
