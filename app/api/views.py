@@ -22,12 +22,12 @@ class AmoInstallWidgetWebhookView(APIView):
             logger.error(f"widget with client_id={client_id} not found")
             return Response({"status": "oke"}, status=200)
         widget = widget.first()
-        response = get_tokens_by_code(client_id, widget.client_secret, code, referer.split(".")[0])
+        subdomain = referer.split(".")[0]
+        response = get_tokens_by_code(client_id, widget.client_secret, code, subdomain)
         access_token = response.get("access_token")
         refresh_token = response.get("refresh_token")
-        logger.debug(f"Получены токены {response}")
         AmoProject.objects.create(
-            subdomain=referer.split(".")[0],
+            subdomain=subdomain,
             access_token=access_token,
             refresh_token=refresh_token,
             widget=widget
@@ -42,7 +42,5 @@ class AmoInstallWidgetWebhookView(APIView):
 class AmoWebhookView(APIView):
     
     def post(self, request: Request):
-        amo = AmoProject.objects.first()
-        amo_api = amo.get_api()
-        me = amo_api.get_me()
-        return Response(me.model_dump(), status=200)
+        logger.debug(f"AmoWebhookView.data = {request.data}")
+        return Response({"status": "ok"}, status=200)
