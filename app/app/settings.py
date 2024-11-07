@@ -27,6 +27,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = ["apps.widgets-tema.ru"]
 
+CSRF_TRUSTED_ORIGINS = ["https://apps.widgets-tema.ru"]
+
 
 # Application definition
 
