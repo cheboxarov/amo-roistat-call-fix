@@ -14,6 +14,8 @@ class AmoWebhookView(APIView):
         try:
             subdomain = data.get("account[subdomain]")[0]
             lead_id = data.get("leads[note][0][note][element_id]")[0]
+            note_id = data.get("leads[note][0][note][note_type]")[0]
+            created_by = data.get("leads[note][0][note][created_by]")[0]
         except Exception as err:
             logger.error(f"validation error {err}")
             return Response({"status": "ok"}, status=200)
@@ -24,5 +26,5 @@ class AmoWebhookView(APIView):
         AmoAuthService.update_tokens(amo_project)
         api = amo_project.get_api()
         lead = api.leads.get_by_id(int(lead_id))
-        logger.debug(f"Найден лид - {lead.name}")
+        logger.debug(f"\nНайден лид - {lead.name}\nnote_id = {note_id}\ncreated_by = {created_by}\n")
         return Response({"status": "ok"}, status=200)
