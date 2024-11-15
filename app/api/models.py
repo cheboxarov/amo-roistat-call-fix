@@ -1,5 +1,5 @@
 from django.db import models
-from .amo_api import get_tokens_by_refresh
+from .services.amo_api import get_tokens_by_refresh
 from py_amo.services import AmoSession
 
 

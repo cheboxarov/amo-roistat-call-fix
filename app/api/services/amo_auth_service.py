@@ -9,7 +9,7 @@ class AmoAuthService:
     @staticmethod
     def install_widget(params: dict) -> AmoProject:
         """
-        На основе параметров вебхука получает аксесс и рефреш токены проекта
+        На основе параметров вебхука получает access и refresh токены проекта
         """
         code = params.get("code")
         client_id = params.get("client_id")
