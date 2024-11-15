@@ -44,16 +44,16 @@ class AmoWebhookView(APIView):
     def post(self, request: Request):
         logger.debug(f"AmoWebhookView.data = {request.data}")
         data = request.data.dict()
-        serializer = LeadEventSerializer(data=data)
-        if serializer.is_valid():
-            logger.debug(f"subdomain - {serializer.validated_data.get("subdomain")}")
-        else:
-            logger.error(f"validation error - {serializer.error_messages}")
+        try:
+            subdomain = data.get("account[subdomain]")[0]
+            lead_id = data.get("leads[note][0][note][element_id]")[0]
+        except:
             return Response({"status": "ok"}, status=200)
-        subdomain = data.get("account[subdomain]")
         try:
             amo_project = AmoProject.objects.get(subdomain=subdomain)
         except AmoProject.DoesNotExist:
             return Response({"status": "ok"}, status=200)
         api = amo_project.get_api()
+        lead = api.leads.get_by_id(int(lead_id))
+        logger.debug(f"Найден лид - {lead.name}")
         return Response({"status": "ok"}, status=200)
