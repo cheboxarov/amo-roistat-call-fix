@@ -47,7 +47,8 @@ class AmoWebhookView(APIView):
         try:
             subdomain = data.get("account[subdomain]")[0]
             lead_id = data.get("leads[note][0][note][element_id]")[0]
-        except:
+        except Exception as err:
+            logger.error(f"validation error {err}")
             return Response({"status": "ok"}, status=200)
         try:
             amo_project = AmoProject.objects.get(subdomain=subdomain)
