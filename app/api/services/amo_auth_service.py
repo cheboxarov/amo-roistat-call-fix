@@ -25,6 +25,8 @@ class AmoAuthService:
         response = get_tokens_by_code(client_id, widget.client_secret, code, subdomain)
         access_token = response.get("access_token")
         refresh_token = response.get("refresh_token")
+        if (query := AmoProject.objects.filter(subdomain=subdomain)).exists():
+            query.first().delete()
         return AmoProject.objects.create(
             subdomain=subdomain,
             access_token=access_token,
