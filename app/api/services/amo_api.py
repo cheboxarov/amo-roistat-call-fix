@@ -1,6 +1,21 @@
 import requests
+from loguru import logger
 
+def validate_amo_response(func):
+    def wrapper(*args, **kwargs):
+        response: requests.Response = func(*args, **kwargs)
+        try:
+            response.raise_for_status()
+        except:
+            if response.headers.get('Content-Type', '').startswith('application/json'):
+                logger.error(f"bad answer from amo {response.json()}")
+            else:
+                logger.error(f"bad answer from amo with non-JSON content: {response.text}")
+            raise
+        return response.json()
+    return wrapper
 
+@validate_amo_response 
 def get_tokens_by_code(client_id: str, client_secret: str, code: str, subdomain: str) -> dict[str, str]:
     url = f"https://{subdomain}.amocrm.ru/oauth2/access_token"
     body = {
@@ -10,10 +25,9 @@ def get_tokens_by_code(client_id: str, client_secret: str, code: str, subdomain:
         "code": code,
         "redirect_uri": "https://apps.widgets-tema.ru/amo-roistat-fix/install/"
     }
-    response = requests.post(url, json=body)
-    response.raise_for_status()
-    return response.json()
+    return requests.post(url, json=body)
 
+@validate_amo_response 
 def get_tokens_by_refresh(client_id: str, client_secret: str, refresh_token: str, subdomain: str) -> dict[str, str]:
     url = f"https://{subdomain}.amocrm.ru/oauth2/access_token"
     body = {
@@ -24,5 +38,4 @@ def get_tokens_by_refresh(client_id: str, client_secret: str, refresh_token: str
         "redirect_uri": "https://apps.widgets-tema.ru/amo-roistat-fix/install/"
     }
     response = requests.post(url, json=body)
-    response.raise_for_status()
-    return response.json()
+    return response
