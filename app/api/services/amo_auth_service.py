@@ -1,7 +1,7 @@
 from ..models import AmoProject, AmoWidget
 from loguru import logger
 from rest_framework.exceptions import APIException
-from .amo_api import get_tokens_by_code
+from .amo_api import get_tokens_by_code, get_tokens_by_refresh
 
 
 class AmoAuthService:
@@ -31,3 +31,10 @@ class AmoAuthService:
             refresh_token=refresh_token,
             widget=widget
         )
+    
+    @staticmethod
+    def update_tokens(project: AmoProject):
+        widget = project.widget
+        response = get_tokens_by_refresh(widget.client_id, widget.client_secret, project.refresh_token, project.subdomain)
+        project.access_token = response.get("access_token")
+        project.save()

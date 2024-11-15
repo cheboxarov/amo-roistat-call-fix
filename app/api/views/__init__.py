@@ -1,2 +1,2 @@
-from .amo_auth_view import AmoInstallWidgetWebhookView
-from .amo_webhook_view import AmoWebhookView
+from .amo_auth_views import AmoInstallWidgetWebhookView
+from .amo_webhook_views import AmoWebhookView

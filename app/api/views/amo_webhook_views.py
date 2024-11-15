@@ -3,6 +3,7 @@ from rest_framework.views import APIView
 from rest_framework.request import Request
 from rest_framework.response import Response
 from ..models import AmoProject
+from ..services import AmoAuthService
 
 
 class AmoWebhookView(APIView):
@@ -20,6 +21,7 @@ class AmoWebhookView(APIView):
             amo_project = AmoProject.objects.get(subdomain=subdomain)
         except AmoProject.DoesNotExist:
             return Response({"status": "ok"}, status=200)
+        AmoAuthService.update_tokens(amo_project)
         api = amo_project.get_api()
         lead = api.leads.get_by_id(int(lead_id))
         logger.debug(f"Найден лид - {lead.name}")
