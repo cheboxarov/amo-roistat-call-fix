@@ -2,7 +2,7 @@ from rest_framework.views import APIView
 from rest_framework.request import Request
 from rest_framework.response import Response
 from loguru import logger
-from .serializers import AuthParamsSerializer
+from .serializers import AuthParamsSerializer, LeadEventSerializer
 from .models import AmoWidget, AmoProject
 from .amo_api import get_tokens_by_code
 
@@ -43,4 +43,17 @@ class AmoWebhookView(APIView):
     
     def post(self, request: Request):
         logger.debug(f"AmoWebhookView.data = {request.data}")
+        data = request.data.dict()
+        serializer = LeadEventSerializer(data=data)
+        if serializer.is_valid():
+            logger.debug(f"subdomain - {serializer.validated_data.get("subdomain")}")
+        else:
+            logger.error(f"validation error - {serializer.error_messages}")
+            return Response({"status": "ok"}, status=200)
+        subdomain = data.get("account[subdomain]")
+        try:
+            amo_project = AmoProject.objects.get(subdomain=subdomain)
+        except AmoProject.DoesNotExist:
+            return Response({"status": "ok"}, status=200)
+        api = amo_project.get_api()
         return Response({"status": "ok"}, status=200)
