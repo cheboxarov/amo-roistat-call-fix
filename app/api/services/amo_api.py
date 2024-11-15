@@ -11,6 +11,7 @@ def validate_amo_response(func):
                 logger.error(f"bad answer from amo {response.json()}")
             else:
                 logger.error(f"bad answer from amo with non-JSON content: {response.text}")
+            logger.error(f"bad request: {response.request.body}")
             raise
         return response.json()
     return wrapper
