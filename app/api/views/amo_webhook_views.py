@@ -25,8 +25,12 @@ class AmoWebhookView(APIView):
         except AmoProject.DoesNotExist:
             logger.error(f"Amo project not found")
             return Response({"status": "ok"}, status=200)
-        AmoAuthService.update_tokens(amo_project)
-        api = amo_project.get_api()
-        lead = api.leads.get_by_id(int(lead_id))
-        logger.debug(f"\nНайден лид - {lead.name}\nnote_id = {note_id}\ncreated_by = {created_by}\n")
-        return Response({"status": "ok"}, status=200)
+        try:
+            AmoAuthService.update_tokens(amo_project)
+            api = amo_project.get_api()
+            lead = api.leads.get_by_id(int(lead_id))
+            logger.debug(f"\nНайден лид - {lead.name}\nnote_id = {note_id}\ncreated_by = {created_by}\n")
+        except Exception as error:
+            logger.error(f"error for get lead - {error}")
+        finally:
+            return Response({"status": "ok"}, status=200)
