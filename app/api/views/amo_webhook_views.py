@@ -11,10 +11,10 @@ class AmoWebhookView(APIView):
     def post(self, request: Request):
         data = request.data.dict()
         try:
-            subdomain = data.get("account[subdomain]")[0]
-            lead_id = data.get("leads[note][0][note][element_id]")[0]
-            note_id = data.get("leads[note][0][note][note_type]")[0]
-            created_by = data.get("leads[note][0][note][created_by]")[0]
+            subdomain = data.get("account[subdomain]")
+            lead_id = data.get("leads[note][0][note][element_id]")
+            note_id = data.get("leads[note][0][note][note_type]")
+            created_by = data.get("leads[note][0][note][created_by]")
 
             logger.debug(f"subdomain - {subdomain}\nlead_id - {lead_id}\nnote_id - {note_id}\ncreated_by - {created_by}")
         except Exception as err:
