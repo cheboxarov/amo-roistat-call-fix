@@ -15,7 +15,11 @@ class AmoInstallWidgetWebhookView(APIView):
         serializer.is_valid(raise_exception=True)
         params = serializer.validated_data
 
-        AmoAuthService.install_widget(params)
+        AmoAuthService.install_widget(
+            code=params.get("code"),
+            client_id = params.get("client_id"),
+            referer = params.get("referer")
+        )
 
         return Response({"result": "ok"}, status=200)
         

@@ -1,19 +1,16 @@
 from ..models import AmoProject, AmoWidget
 from loguru import logger
 from rest_framework.exceptions import APIException
-from .amo_api import get_tokens_by_code, get_tokens_by_refresh
+from ..api.amo_tokens_api import get_tokens_by_code, get_tokens_by_refresh
 
 
 class AmoAuthService:
 
     @staticmethod
-    def install_widget(params: dict) -> AmoProject:
+    def install_widget(code: str, client_id: str, referer: str) -> AmoProject:
         """
         На основе параметров вебхука получает access и refresh токены проекта
         """
-        code = params.get("code")
-        client_id = params.get("client_id")
-        referer = params.get("referer")
         subdomain = referer.split(".")[0]
 
         widget = AmoWidget.objects.filter(client_id=client_id)

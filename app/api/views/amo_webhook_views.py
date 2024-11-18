@@ -9,19 +9,21 @@ from ..services import AmoAuthService
 class AmoWebhookView(APIView):
     
     def post(self, request: Request):
-        logger.debug(f"AmoWebhookView.data = {request.data}")
         data = request.data.dict()
         try:
             subdomain = data.get("account[subdomain]")[0]
             lead_id = data.get("leads[note][0][note][element_id]")[0]
             note_id = data.get("leads[note][0][note][note_type]")[0]
             created_by = data.get("leads[note][0][note][created_by]")[0]
+
+            logger.debug(f"subdomain - {subdomain}\nlead_id - {lead_id}\nnote_id - {note_id}\ncreated_by - {created_by}")
         except Exception as err:
             logger.error(f"validation error {err}")
             return Response({"status": "ok"}, status=200)
         try:
             amo_project = AmoProject.objects.get(subdomain=subdomain)
         except AmoProject.DoesNotExist:
+            logger.error(f"Amo project not found")
             return Response({"status": "ok"}, status=200)
         AmoAuthService.update_tokens(amo_project)
         api = amo_project.get_api()
