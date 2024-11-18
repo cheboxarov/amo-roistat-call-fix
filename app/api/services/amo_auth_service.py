@@ -36,4 +36,5 @@ class AmoAuthService:
         widget = project.widget
         response = get_tokens_by_refresh(widget.client_id, widget.client_secret, project.refresh_token, project.subdomain)
         project.access_token = response.get("access_token")
+        project.refresh_token = response.get("refresh_token")
         project.save()
