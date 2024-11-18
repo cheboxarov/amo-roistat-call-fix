@@ -29,7 +29,10 @@ class AmoWebhookView(APIView):
             AmoAuthService.update_tokens(amo_project)
             api = amo_project.get_api()
             lead = api.leads.get_by_id(int(lead_id))
-            logger.debug(f"\nНайден лид - {lead.name}\nnote_id = {note_id}\ncreated_by = {created_by}\n")
+            logger.debug(f"\nНайден лид - {lead}\nnote_id = {note_id}\ncreated_by = {created_by}\n")
+            if note_id == 10:
+                lead.responsible_user_id = created_by
+                api.leads.update(lead)
         except Exception as error:
             logger.error(f"error for get lead - {error}")
         finally:
