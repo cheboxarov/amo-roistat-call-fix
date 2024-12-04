@@ -27,7 +27,7 @@ jobs:
             docker compose down
             docker compose pull
             docker compose up -d --build
-            sleep 10
+            sleep 11
             
             if [ $(curl -s -o /dev/null -w "%{http_code}" http://localhost:84/) -eq 404 ]; then
               echo "Контейнер Django запущен успешно"
