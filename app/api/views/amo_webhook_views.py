@@ -2,7 +2,7 @@ from loguru import logger
 from rest_framework.views import APIView
 from rest_framework.request import Request
 from rest_framework.response import Response
-from ..models import AmoProject
+from ..models import AmoProject, LeadProcessed
 from ..services import AmoAuthService
 
 
@@ -30,9 +30,11 @@ class AmoWebhookView(APIView):
             api = amo_project.get_api()
             lead = api.leads.get_by_id(int(lead_id))
             logger.debug(f"\nНайден лид - {lead}\nnote_id = {note_id}\ncreated_by = {created_by}\n")
-            if note_id == 10:
+            
+            if note_id == 10 and not (queryset := LeadProcessed.objects).filter(lead_id=lead_id).exists():
                 lead.responsible_user_id = created_by
                 api.leads.update(lead)
+                queryset.create(lead_id=lead_id)
         except Exception as error:
             logger.error(f"error for get lead - {error}")
         finally:

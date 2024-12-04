@@ -25,3 +25,11 @@ class AmoProject(models.Model):
 
     def get_api(self) -> AmoSession:
         return AmoSession(self.access_token, self.subdomain)
+    
+
+class LeadProcessed(models.Model):
+
+    lead_id = models.PositiveBigIntegerField()
+
+    def __str__(self):
+        return f"{self.lead_id}"
