@@ -28,7 +28,7 @@ SECRET_KEY = "django-insecure-pky6=k+^4+3v9vwyj&)+hji#jsv*pcv&rphnf^sgdh^)x_rv#=
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["apps.widgets-tema.ru"]
+ALLOWED_HOSTS = ["*"]
 
 CSRF_TRUSTED_ORIGINS = ["https://apps.widgets-tema.ru"]
 
