@@ -11,6 +11,7 @@ class AmoWebhookView(APIView):
     
     def post(self, request: Request):
         data = request.data.dict()
+        logger.debug(f"wh data: {data}")
         try:
             subdomain = data.get("account[subdomain]")
             lead_id = data.get("leads[note][0][note][element_id]")
