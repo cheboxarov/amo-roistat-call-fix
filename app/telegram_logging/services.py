@@ -1,6 +1,6 @@
 from telegram import Bot
 from asyncio import run
-from utils import create_log_file
+from .utils import create_log_file
 from dotenv import load_dotenv
 from loguru import logger
 import os
