@@ -12,6 +12,9 @@ class AmoWebhookView(APIView):
     def post(self, request: Request):
         data = request.data.dict()
         logger.debug(f"wh data: {data}")
+        def return_error(message: str) -> Response:
+            logger.error(f"Лид не найден с ид {lead_id}")
+            return Response({"status": "ok"}, status=200)
         try:
             subdomain = data.get("account[subdomain]")
             lead_id = data.get("leads[note][0][note][element_id]")
@@ -23,12 +26,13 @@ class AmoWebhookView(APIView):
         try:
             amo_project = AmoProject.objects.get(subdomain=subdomain)
         except AmoProject.DoesNotExist:
-            logger.error(f"Amo project not found")
-            return Response({"status": "ok"}, status=200)
+            return return_error(f"Amo project not found")
         try:
             AmoAuthService.update_tokens(amo_project)
             api = amo_project.get_api()
             lead = api.leads.get_by_id(int(lead_id), with_="contacts")
+            if not lead:
+                return return_error(f"Лид не найден с ид {lead_id}")
             logger.debug(f"\nНайден лид - {lead}\nnote_id = {note_id}\ncreated_by = {created_by}\n")
             # if not int(lead.created_at / 100) == int(time.time() / 100):
             #     logger.debug(f"Слишком давно создан")

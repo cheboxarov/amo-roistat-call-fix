@@ -46,5 +46,5 @@ def create_telegram_logger_from_dotenv() -> Optional[TelegramLoggerService]:
     if telegram_token is None or telegram_chat_id is None:
         logger.error("Добавьте TELEGRAM_LOGGING_TOKEN и TELEGRAM_LOGGING_CHAT_ID в .env для логгирования ошибок в телеграм бота.")
         return None
-    return TelegramLoggerService(token=telegram_token, chat_id=telegram_chat_id, service_name="auth")
+    return TelegramLoggerService(token=telegram_token, chat_id=telegram_chat_id, service_name="amo-roistat-fix")
     
