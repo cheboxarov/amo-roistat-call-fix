@@ -31,10 +31,12 @@ class AmoWebhookView(APIView):
             lead = api.leads.get_by_id(int(lead_id))
             logger.debug(f"\nНайден лид - {lead}\nnote_id = {note_id}\ncreated_by = {created_by}\n")
             
-            if note_id == 10 and not (queryset := LeadProcessed.objects).filter(lead_id=lead_id).exists():
+            if int(note_id) == 10 and not LeadProcessed.objects.filter(lead_id=lead_id).exists():
+                logger.debug(f"Меняю responsible_user_id у лида с {lead.responsible_user_id} на {created_by}")
                 lead.responsible_user_id = created_by
-                api.leads.update(lead)
-                queryset.create(lead_id=lead_id)
+                new_lead = api.leads.update(lead)
+                logger.debug(f"Новый лид - {new_lead}")
+                LeadProcessed.objects.create(lead_id=lead_id)
         except Exception as error:
             logger.error(f"error for get lead - {error}")
         finally:
