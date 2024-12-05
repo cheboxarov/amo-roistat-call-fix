@@ -29,13 +29,13 @@ class AmoWebhookView(APIView):
             api = amo_project.get_api()
             lead = api.leads.get_by_id(int(lead_id))
             logger.debug(f"\nНайден лид - {lead}\nnote_id = {note_id}\ncreated_by = {created_by}\n")
-            logger.debug(f"Создан лид - {lead.created_at} now {time.time()}")
+            if not int(lead.created_at / 100) == int(time.time() / 100):
+                logger.debug(f"Слишком давно создан")
+                return Response({"status": "ok"}, status=200)
             
             if int(note_id) == 10 and not LeadProcessed.objects.filter(lead_id=lead_id).exists():
-                logger.debug(f"Меняю responsible_user_id у лида с {lead.responsible_user_id} на {created_by}")
                 lead.responsible_user_id = created_by
                 new_lead = api.leads.update(lead)
-                logger.debug(f"Новый лид - {new_lead}")
                 LeadProcessed.objects.create(lead_id=lead_id)
         except Exception as error:
             logger.error(f"error for get lead - {error}")
