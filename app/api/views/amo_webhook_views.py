@@ -27,7 +27,7 @@ class AmoWebhookView(APIView):
         try:
             AmoAuthService.update_tokens(amo_project)
             api = amo_project.get_api()
-            lead = api.leads.get_by_id(int(lead_id))
+            lead = api.leads.get_by_id(int(lead_id), with_="contacts")
             logger.debug(f"\nНайден лид - {lead}\nnote_id = {note_id}\ncreated_by = {created_by}\n")
             # if not int(lead.created_at / 100) == int(time.time() / 100):
             #     logger.debug(f"Слишком давно создан")
