@@ -4,6 +4,7 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from ..models import AmoProject, LeadProcessed
 from ..services import AmoAuthService
+import time
 
 
 class AmoWebhookView(APIView):
@@ -15,8 +16,6 @@ class AmoWebhookView(APIView):
             lead_id = data.get("leads[note][0][note][element_id]")
             note_id = data.get("leads[note][0][note][note_type]")
             created_by = data.get("leads[note][0][note][created_by]")
-
-            logger.debug(f"subdomain - {subdomain}\nlead_id - {lead_id}\nnote_id - {note_id}\ncreated_by - {created_by}")
         except Exception as err:
             logger.error(f"validation error {err}")
             return Response({"status": "ok"}, status=200)
@@ -30,12 +29,13 @@ class AmoWebhookView(APIView):
             api = amo_project.get_api()
             lead = api.leads.get_by_id(int(lead_id))
             logger.debug(f"\nНайден лид - {lead}\nnote_id = {note_id}\ncreated_by = {created_by}\n")
+            logger.debug(f"Создан лид - {lead.created_at}")
             
             if int(note_id) == 10 and not LeadProcessed.objects.filter(lead_id=lead_id).exists():
                 logger.debug(f"Меняю responsible_user_id у лида с {lead.responsible_user_id} на {created_by}")
                 lead.responsible_user_id = created_by
                 new_lead = api.leads.update(lead)
-                logger.debug(f"Новый лид - {new_lead}")
+                logger.debug(f"Новый лид - {new_lead} now - {time.time()}")
                 LeadProcessed.objects.create(lead_id=lead_id)
         except Exception as error:
             logger.error(f"error for get lead - {error}")
