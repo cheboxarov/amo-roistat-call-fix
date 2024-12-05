@@ -38,6 +38,12 @@ class AmoWebhookView(APIView):
             if int(note_id) == 10 and not LeadProcessed.objects.filter(lead_id=lead_id).exists():
                 lead.responsible_user_id = created_by
                 api.leads.update(lead)
+                for contact in lead.embedded.get("contacts"):
+                    if contact.get("is_main"):
+                        contact_id = contact.get("id")
+                        contact = api.contacts.get_by_id(contact_id)
+                        contact.responsible_user_id = created_by
+                        api.contacts.update(contact)
                 LeadProcessed.objects.create(lead_id=lead_id)
         except Exception as error:
             logger.error(f"error for get lead - {error}")
